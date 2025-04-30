@@ -1,8 +1,18 @@
+import 'package:app_movil/pages/home.page.dart';
+import 'package:app_movil/provider/usuario.provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'pages/login.page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UsuarioProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -14,7 +24,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Driver',
       routes: {
-        'login' : (_) => Login(),
+        'login': (_) => Login(),
+        'home': (_) => const Home_Page(),
       },
       initialRoute: 'login',
     );

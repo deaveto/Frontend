@@ -1,3 +1,5 @@
+import 'package:app_movil/provider/usuario.provider.dart';
+import 'package:app_movil/widgets/Campo_Contrase%C3%B1a.dart';
 import 'package:app_movil/widgets/input_decoration.dart';
 import 'package:flutter/material.dart';
 
@@ -24,9 +26,15 @@ class Login extends StatelessWidget {
       ),
     );
   }
-
  
+  // ignore: non_constant_identifier_names
   SingleChildScrollView ContenedorFromularioLogin(Size size, BuildContext context) {
+    final TextEditingController usuarioController = TextEditingController();
+    final TextEditingController claveController = TextEditingController();
+    final Usuario_Login login = Usuario_Login(
+      usuarioController: usuarioController,
+      claveController: claveController,
+    );
     return SingleChildScrollView(
       child: Column(
               children: [
@@ -53,36 +61,34 @@ class Login extends StatelessWidget {
                       SizedBox(height: 10),
                       Text('Login', style: Theme.of(context).textTheme.headlineMedium),
                       SizedBox(height: 30,),
-                      Container(
-                        child: Form(
-                          child: Column(
-                            children: [
-                              TextFormField(
-                                autocorrect: false,
-                                decoration: Input_Decoration.inputDecoration(
-                                  hintext: 'Nombre de ususario registrado', 
-                                  labeltext: 'Usuario', 
-                                  icono: Icon(IconData(0xee35, fontFamily: 'MaterialIcons')),
-                                ),
+                      Form(
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              controller: usuarioController,
+                              autocorrect: false,
+                              decoration: Input_Decoration.inputDecoration(
+                                hintext: 'Nombre de ususario registrado', 
+                                labeltext: 'Usuario', 
+                                icono: Icon(IconData(0xee35, fontFamily: 'MaterialIcons')),
                               ),
-                              SizedBox(height: 30),
-                              TextFormField(
-                                autocorrect: false,
-                                decoration: Input_Decoration.inputDecoration(
-                                  hintext: '********', 
-                                  labeltext: 'Contraseña', 
-                                  icono: Icon(Icons.lock_outline),
-                                ),
+                            ),
+                            SizedBox(height: 30),
+                            CampoContrasena(controller: claveController),
+                            SizedBox(height: 30),
+                            MaterialButton(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              disabledColor: Colors.grey,
+                              color:const Color.fromARGB(255, 12, 112, 194),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 80,vertical: 15),
+                                child: Text('Ingresar',style: TextStyle(color: Colors.white)),
                               ),
-                              SizedBox(height: 30),
-                              MaterialButton(
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                disabledColor: Colors.grey,
-                                color:Colors.blue,
-                                onPressed: () {},
-                              )      
-                            ],
-                          ),
+                              onPressed: () {
+                                login.loginUsuario(context);
+                              },
+                            )      
+                          ],
                         ),
                       )
                     ],
@@ -96,6 +102,7 @@ class Login extends StatelessWidget {
     );
   }
 
+  // ignore: non_constant_identifier_names
   SafeArea ContenedorIcono() {
     return SafeArea(
             child: Container( 
@@ -110,6 +117,7 @@ class Login extends StatelessWidget {
           );
   }
 
+  // ignore: non_constant_identifier_names
   Container ContenedorAzul(Size size) {
     return Container( 
       decoration: BoxDecoration(
@@ -135,13 +143,14 @@ class Login extends StatelessWidget {
     );
   }
 
+  // ignore: non_constant_identifier_names
   Container Burbuja(double radio) {
-    return Container(
-            width: radio,
-            height: radio,
-            decoration: BoxDecoration(
-               borderRadius: BorderRadius.circular(radio),
-              color: Color.fromRGBO(255, 255, 255, 0.047)),
-          );
+    return Container(      
+      width: radio,
+      height: radio,
+      decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(radio),
+      color: Color.fromRGBO(255, 255, 255, 0.047)),
+    );
   }
 }

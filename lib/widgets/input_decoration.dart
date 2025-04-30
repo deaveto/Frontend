@@ -4,7 +4,8 @@ class Input_Decoration {
   static InputDecoration  inputDecoration({
     required String hintext,
     required String labeltext,
-    required Icon icono
+    required Icon icono,
+    Widget? suffixIcon,
   }){
     return InputDecoration(
       enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color:const Color.fromARGB(255, 46, 93, 223))),
@@ -12,7 +13,7 @@ class Input_Decoration {
       hintText: hintext,
       labelText: labeltext,
       prefixIcon: icono,
+      suffixIcon: suffixIcon,
     );
   }
-
 }
