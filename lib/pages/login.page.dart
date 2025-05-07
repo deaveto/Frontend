@@ -70,7 +70,7 @@ class Login extends StatelessWidget {
                               decoration: Input_Decoration.inputDecoration(
                                 hintext: 'Nombre de ususario registrado', 
                                 labeltext: 'Usuario', 
-                                icono: Icon(IconData(0xee35, fontFamily: 'MaterialIcons')),
+                                icono: Icon(Icons.account_circle_outlined),
                               ),
                             ),
                             SizedBox(height: 30),

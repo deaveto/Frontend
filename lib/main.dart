@@ -1,4 +1,5 @@
 import 'package:app_movil/pages/home.page.dart';
+import 'package:app_movil/pages/prueba.page.dart';
 import 'package:app_movil/provider/usuario.provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
       routes: {
         'login': (_) => Login(),
         'home': (_) => const Home_Page(),
+        'prueba': (_) => const pruebas(),
       },
       initialRoute: 'login',
     );

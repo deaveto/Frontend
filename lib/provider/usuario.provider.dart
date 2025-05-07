@@ -56,8 +56,8 @@ class UsuarioProvider with ChangeNotifier {
     final decodedToken = JwtDecoder.decode(token); // Si usas jwt_decoder (deberás agregarlo en pubspec.yaml)
     final expirationDate = DateTime.fromMillisecondsSinceEpoch(decodedToken['exp'] * 1000);
     // Compara la fecha de expiración con la fecha actual
-    print('tiempo de expiración de la API:');
-    print(expirationDate);
+    //print('tiempo de expiración de la API:');
+    //print(expirationDate);
     return expirationDate.isBefore(DateTime.now());
   }
   
@@ -72,6 +72,8 @@ class UsuarioProvider with ChangeNotifier {
     );
     if (response.statusCode == 200) {
       final data = response.body;
+      print('datos 1');
+      print(data);
       _rutaActiva = data.toString(); // Almacena la respuesta en la variable.
       notifyListeners(); // Notifica a los listeners para que se actualice la UI.
     } else {
@@ -82,4 +84,34 @@ class UsuarioProvider with ChangeNotifier {
       Navigator.pushReplacementNamed(context, 'login');
     }
   }
+
+  Future<void> actualizarEstadoRuta(int RutaId, String NuevoEstado, BuildContext context) async{
+    if(accessToken == null || JwtDecoder.isExpired(accessToken!)){
+      _rutaActiva = 'Token vencido. Redirigiendo al login...';
+      notifyListeners();
+      Navigator.pushReplacementNamed(context, 'login');
+      return;
+    }
+    final url= Uri.parse('$url_api/api/ruta-actualizar/$RutaId/');
+    final response = await http.patch(
+      url,
+      headers: {
+      'Authorization': 'Bearer $accessToken',
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode({
+      'estado': NuevoEstado,
+    }),
+    );
+    if (response.statusCode == 200) {
+      print('Ruta actualizada exitosamente');
+      // Opcional: volver a cargar las rutas activas si quieres actualizar la vista
+      await RutaUsuario(context);
+    } else {
+      print('Error al actualizar ruta: ${response.statusCode}');
+      print('Detalle: ${response.body}');
+    }
+  }
+
 }
+
