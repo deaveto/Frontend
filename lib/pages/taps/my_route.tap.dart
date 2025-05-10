@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:app_movil/provider/usuario.provider.dart';
+// ignore: depend_on_referenced_packages
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -126,7 +127,8 @@ class _Two_TapState extends State<Two_Tap> {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
-                    for (var pasajero in grupo) ExpansionOrigen(pasajero),
+                    for (var pasajero in grupo) ExpansionOrigen(pasajero, Icons.album), //ExpansionOrigen(pasajero),
+
                     const Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Text(
@@ -134,7 +136,7 @@ class _Two_TapState extends State<Two_Tap> {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
-                    for (var pasajero in grupo) ExpansionDestino(pasajero),
+                    for (var pasajero in grupo) ExpansionDestino(pasajero, Icons.fmd_good_outlined),
                   ],
                 );
               },
@@ -147,77 +149,137 @@ class _Two_TapState extends State<Two_Tap> {
     }
   }
 
-  // ignore: non_constant_identifier_names
-  ExpansionTile ExpansionDestino(pasajero) {
-    return ExpansionTile(
-      leading: const Icon(Icons.fmd_good_outlined),
-      title: Text(
-        pasajero['destino'],
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-      ),
-      subtitle: Text(
-        'Trip ID: ${pasajero['numero_seguro']}\n${pasajero['nombre_cliente']}',
-        style: const TextStyle(fontSize: 12),
-      ),
-      trailing: Row(
-        mainAxisSize:
-            MainAxisSize
-                .min, // ¡Importante! Para que la fila se ajuste al contenido
-        children: [
-          IconButton(
-            icon: Icon(Icons.navigation),
-            onPressed: () {_launchUrlMap(pasajero['destino']);},
-          ),// Acción del botón de navegación
-          //const Icon(Icons.expand_more), // Flecha desplegable
-        ],
-      ),
+   // ignore: non_constant_identifier_names
+  Widget ExpansionDestino(pasajero, IconData icono) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 10),
-        if(pasajero['estado_ruta'] == 'recogido')...[
-          MaterialButton(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            color: const Color.fromARGB(255, 255, 151, 32),
-            child: Text('Finalizar', style: TextStyle(color: Colors.white)),
-            onPressed:(){
-              Provider.of<UsuarioProvider>(context, listen: false)
-              .actualizarEstadoRuta(pasajero['id'], 'completo', context);
-            }
+        // Columna izquierda con ícono y línea
+        Column(
+          children: [
+            Icon(icono, size: 20, color: Colors.black),
+            Container(
+              width: 2,
+              height: 55, // ajusta según necesites
+              color: Colors.black,
+            ),
+          ],
+        ),
+        const SizedBox(width: 8), // Espacio entre la línea y el contenido
+        Expanded(
+          child: ExpansionTile(
+            title: Text(
+              pasajero['destino'],
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            subtitle: Text(
+              'Trip ID: ${pasajero['numero_seguro']}\n${pasajero['nombre_cliente']}',
+              style: const TextStyle(fontSize: 12),
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min, // ¡Importante! Para que la fila se ajuste al contenido
+              children: [// Acción del botón de navegación
+                Container(
+                  width: 35,
+                  height: 35,
+                  decoration: BoxDecoration(
+                    color: Colors.amber,
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  child: IconButton(
+                    icon: Icon(Icons.navigation, size: 20, color: Colors.white),
+                    onPressed: () => _makePhoneCall(pasajero['destino'])
+                  ),
+                ),
+              ],
+            ),
+            children: [
+              SizedBox(height: 10),
+              if(pasajero['estado_ruta'] == 'recogido')...[
+                MaterialButton(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  color: const Color.fromARGB(255, 255, 151, 32),
+                  child: Text('Finalizar', style: TextStyle(color: Colors.white)),
+                  onPressed:(){
+                    Provider.of<UsuarioProvider>(context, listen: false)
+                    .actualizarEstadoRuta(pasajero['id'], 'completo', context);
+                  }
+                ),
+              ],
+              if(pasajero['estado_ruta'] == 'completo')...[
+                Icon(Icons.add_task, color: Colors.green, size: 50,),         
+              ],
+              if(pasajero['estado_ruta'] == 'cancelado')...[
+                Icon(Icons.block_flipped, color: Colors.red, size: 50,)
+              ],
+              SizedBox(height: 10),
+            ],
           ),
-        ],
-        if(pasajero['estado_ruta'] == 'completo')...[
-          Icon(Icons.add_task, color: Colors.green, size: 50,),
-          //Text('Ruta: ${pasajero['estado_ruta']}'),          
-        ],
-        if(pasajero['estado_ruta'] == 'cancelado')...[
-          Icon(Icons.block_flipped, color: Colors.red, size: 50,)
-        ],
-        SizedBox(height: 10),
+        ),
       ],
     );
   }
 
   // ignore: non_constant_identifier_names
-  ExpansionTile ExpansionOrigen(pasajero) {
-    return ExpansionTile(
-      leading: const Icon(Icons.album),
-      title: Text(
-        pasajero['origen'],
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-      ),
-      subtitle: Text(
-        'Trip ID: ${pasajero['numero_seguro']}\n${pasajero['nombre_cliente']}\nPickup Time: ${pasajero['hora']}',
-        style: const TextStyle(fontSize: 12),
-      ),
-      trailing: Row(
-        mainAxisSize:
-            MainAxisSize.min, // ¡Importante! Para que la fila se ajuste al contenido
-        children: [
-          IconButton(icon: Icon(Icons.call,size: 20,color: Colors.green),onPressed: () {_makePhoneCall(pasajero['telefono']);}), // Acción del botón de llamada
-          IconButton(icon: Icon(Icons.navigation,size: 20,color: Colors.amber),onPressed: () {_launchUrlMap(pasajero['destino']);},), // Acción del botón de navegación
-          //const Icon(Icons.expand_more), // Flecha desplegable
-        ],
-      ),
-      children: [DatosRuta(pasajero)],
+  Widget ExpansionOrigen(pasajero, IconData icono) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Columna izquierda con ícono y línea
+        Column(
+          children: [
+            Icon(icono, size: 20, color: const Color.fromARGB(155, 1, 109, 1)),
+            Container(
+              width: 2,
+              height: 80, // ajusta según necesites
+              color: Color.fromARGB(155, 0, 0, 0),
+            ),
+          ],
+        ),
+        const SizedBox(width: 8), // Espacio entre la línea y el contenido
+        Expanded(
+          child: ExpansionTile(
+            title: Text(
+              pasajero['origen'],
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            subtitle: Text(
+              'Trip ID: ${pasajero['numero_seguro']}\n${pasajero['nombre_cliente']}\nPickup Time: ${pasajero['hora']}',
+              style: const TextStyle(fontSize: 12),
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 35,
+                  height: 35,
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  child: IconButton(
+                    icon: Icon(Icons.call, size: 20, color: Colors.white),
+                    onPressed: () => _makePhoneCall(pasajero['telefono'])
+                  ),
+                ),
+                SizedBox(width: 5),
+                Container(
+                  width: 35,
+                  height: 35,
+                  decoration: BoxDecoration(
+                    color: Colors.amber,
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: IconButton(
+                    icon: Icon(Icons.navigation, size: 20, color: Colors.white),
+                    onPressed: () => _launchUrlMap(pasajero['origen'])),
+                ),                
+              ],
+            ),
+            children: [DatosRuta(pasajero)],
+          ),
+        ),
+      ],
     );
   }
 
@@ -228,7 +290,7 @@ class _Two_TapState extends State<Two_Tap> {
         SizedBox(height: 10),
         Row(          
           children: [
-            SizedBox(width: 55),
+            //SizedBox(width: 0),
             Column(
               children: [
                 Icon(Icons.accessibility_new_sharp),
@@ -294,7 +356,7 @@ class _Two_TapState extends State<Two_Tap> {
                 ],      
                 if (botonEsperaDeshabilitado && pasajero['estado_ruta'] == 'espera')
                     Text(                      
-                      'Tiempo: ${formatoTiempo(tiempoRestante)}',
+                      '             ${formatoTiempo(tiempoRestante)}',
                       style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.bold),
                     ),
             
