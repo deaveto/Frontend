@@ -100,7 +100,7 @@ class UsuarioProvider with ChangeNotifier {
       'Content-Type': 'application/json',
     },
     body: jsonEncode({
-      'estado': NuevoEstado,
+      'estado_ruta': NuevoEstado,
     }),
     );
     if (response.statusCode == 200) {
