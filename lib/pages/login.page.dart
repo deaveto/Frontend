@@ -62,8 +62,7 @@ class _LoginState extends State<Login> {
           children: [
 
             ContenedorAzul(size),
-
-            ContenedorIcono(),
+            ContenedorIcono(size),
             ContenedorFromularioLogin(size, context, login),
           ],
         ),
@@ -71,6 +70,7 @@ class _LoginState extends State<Login> {
     );
   }
 
+  // ignore: non_constant_identifier_names
   SingleChildScrollView ContenedorFromularioLogin(Size size, BuildContext context, Usuario_Login login) {
     return SingleChildScrollView(
       child: Column(
@@ -112,7 +112,7 @@ class _LoginState extends State<Login> {
                       CampoContrasena(controller: claveController),
                       const SizedBox(height: 20),
 
-                      // 🔘 Checkbox para guardar credenciales
+                      // Checkbox para guardar credenciales
                       Row(
                         children: [
                           Checkbox(
@@ -126,12 +126,11 @@ class _LoginState extends State<Login> {
                           const Text("Guardar credenciales"),
                         ],
                       ),
-
                       const SizedBox(height: 20),
                       MaterialButton(
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         disabledColor: Colors.grey,
-                        color: const Color.fromARGB(255, 12, 112, 194),
+                        color: Colors.green[800],
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
                           child: const Text('Ingresar', style: TextStyle(color: Colors.white)),
@@ -153,27 +152,26 @@ class _LoginState extends State<Login> {
   }
 
 
-  SafeArea ContenedorIcono() {
+  // ignore: non_constant_identifier_names
+  SafeArea ContenedorIcono(Size size) {
     return SafeArea(
       child: Container(
-        margin: const EdgeInsets.only(top: 80),
-        width: double.infinity,
-        child: const Icon(
-          Icons.person_pin,
-          color: Colors.white,
-          size: 100,
-        ),
-      ),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(100)),
+        margin: EdgeInsets.symmetric(horizontal: size.height * 0.145,vertical: size.width*0.2),
+        child: Image.asset('assets/images/logo.png', width: 200, height: 150),
+        //const Icon(Icons.person_pin, color: Colors.white,size: 100,),
+      )
     );
   }
 
 
+  // ignore: non_constant_identifier_names
   Container ContenedorAzul(Size size) {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(colors: [
-          Color.fromRGBO(38, 67, 165, 1),
-          Color.fromRGBO(63, 118, 238, 1),
+          Color.fromARGB(255, 0, 109, 4),
+          Color.fromARGB(202, 0, 109, 4),
         ]),
       ),
       width: double.infinity,
@@ -194,6 +192,7 @@ class _LoginState extends State<Login> {
   }
 
 
+  // ignore: non_constant_identifier_names
   Container Burbuja(double radio) {
     return Container(
       width: radio,

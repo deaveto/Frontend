@@ -8,8 +8,8 @@ class Input_Decoration {
     Widget? suffixIcon,
   }){
     return InputDecoration(
-      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color:const Color.fromARGB(255, 46, 93, 223))),
-      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: const Color.fromARGB(255, 46, 93, 223), width: 2)),
+      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.green)),
+      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.green, width: 2)),
       hintText: hintext,
       labelText: labeltext,
       prefixIcon: icono,

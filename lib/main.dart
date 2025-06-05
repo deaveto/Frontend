@@ -1,3 +1,4 @@
+import 'package:app_movil/pages/SplashScreen.dart';
 import 'package:app_movil/pages/home.page.dart';
 import 'package:app_movil/pages/prueba.page.dart';
 import 'package:app_movil/provider/usuario.provider.dart';
@@ -10,6 +11,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UsuarioProvider()),
+        //ChangeNotifierProvider(create: (_) => UsuarioProviderFechas()),
       ],
       child: const MyApp(),
     ),
@@ -25,11 +27,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Driver',
       routes: {
+        'splash': (_) => SplashScreen(),
         'login': (_) => Login(),
         'home': (_) => const Home_Page(),
         'prueba': (_) => const pruebas(),
       },
-      initialRoute: 'login',
+      initialRoute: 'splash',
     );
   }
 }
