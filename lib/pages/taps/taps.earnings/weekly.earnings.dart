@@ -83,8 +83,6 @@ class _weeklyState extends State<weekly> {
       FechaSabado = DateFormat(formato).format(sabado);
       FechaDomingo = DateFormat(formato).format(domingo);
 
-      double sumaLunesT = 0.0;
-
       // ignore: non_constant_identifier_names
       List<double> SumaDiasSemana = [0.0,0.0,0.0,0.0,0.0,0.0,0.0];
 
