@@ -14,7 +14,7 @@ class today extends StatefulWidget {
 
 // ignore: camel_case_types
 class _todayState extends State<today> {
-  String FechaActual = new DateTime.now().toString().split(" ")[0];
+  //String FechaActual = new DateTime.now().toString().split(" ")[0];
   double totalValorPago = 0.0;
   double totalCommission = 0.0;
   double totalCopay = 0.0;
@@ -101,7 +101,7 @@ class _todayState extends State<today> {
                       ),
                       Row(
                         children: [
-                          SizedBox(width: 18),
+                          SizedBox(width: size.width*0.08),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start, // alinear hacia la izquierda
                             children: [
@@ -118,7 +118,7 @@ class _todayState extends State<today> {
                               SizedBox(height: 15),
                             ],                            
                           ),
-                          SizedBox(width: size.width*0.49),
+                          SizedBox(width: size.width*0.5),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end, // alinear hacia la derecha
                             children: [                              
@@ -141,14 +141,18 @@ class _todayState extends State<today> {
                         padding: EdgeInsets.all(8),
                         margin: EdgeInsets.all(0),
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(97, 154, 198, 231),
+                          color: Color.fromARGB(97, 154, 198, 231),
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(12),
+                            bottomRight: Radius.circular(12),
+                          ),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            SizedBox(width: 11),
+                            SizedBox(width: size.width*0.07),
                             Text('Payout', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                            SizedBox(width: size.width*0.59),
+                            SizedBox(width: size.width*0.58),
                             Text('\$${totalPayout.toStringAsFixed(2)}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                           ],
                         ),
@@ -177,8 +181,8 @@ class _todayState extends State<today> {
         padding: EdgeInsets.all(8),
         margin: EdgeInsets.all(0),
         decoration: BoxDecoration(
-          color: Colors.green[100],
-          border: Border.all(color: const Color.fromARGB(255, 0, 90, 3)),
+          color: Colors.blue[100],
+          border: Border.all(color: const Color.fromARGB(255, 0, 63, 114)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

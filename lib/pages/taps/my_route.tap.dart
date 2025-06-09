@@ -173,10 +173,10 @@ class _MyRouteState extends State<MyRoute> {
         Expanded(
           child: ExpansionTile(
             backgroundColor: ruta == conteo 
-              ? Colors.green[700]
+              ? Colors.blue[700]
               : Colors.white,
             collapsedBackgroundColor: ruta == conteo 
-              ? Colors.green[200] 
+              ? Colors.blue[200] 
               : Colors.white,
             title: Text(pasajero['destino'],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15)),
             subtitle: Text('Trip ID: ${pasajero['numero_seguro']}\n${pasajero['nombre_cliente']}',style: TextStyle(fontSize: 12)),
@@ -257,10 +257,10 @@ class _MyRouteState extends State<MyRoute> {
         Expanded(
           child: ExpansionTile(
             backgroundColor: ruta == conteo 
-              ? Colors.green[700]
+              ? Colors.blue[700]
               : Colors.white,
             collapsedBackgroundColor: ruta == conteo 
-              ? Colors.green[200]
+              ? Colors.blue[200]
               : Colors.white,
             title: Text(pasajero['origen'],style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15,)),           
             subtitle: Text('ID: ${pasajero['numero_seguro']}\n${pasajero['nombre_cliente']}   --   Pickup Time: ${pasajero['hora']}',style: TextStyle(fontSize: 13)),

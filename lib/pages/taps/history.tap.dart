@@ -14,12 +14,21 @@ class Hystory extends StatefulWidget  {
 
 // ignore: camel_case_types
 class _HystoryState extends State<Hystory> {
+  // ignore: prefer_final_fields
   TextEditingController _dateController = TextEditingController();
-  String FechaSeleccionada = new DateTime.now().toString().split(" ")[0];
+  // ignore: non_constant_identifier_names
+  String FechaSeleccionada = DateTime.now().toString().split(" ")[0];
+  //String? FechaSeleccionada;
   
   @override
   void initState() {
     super.initState();
+    if (_dateController.text.isNotEmpty) {
+    FechaSeleccionada = _dateController.text;
+    } else {
+      FechaSeleccionada = DateTime.now().toString().split(' ')[0];
+      _dateController.text = FechaSeleccionada;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       Provider.of<UsuarioProvider>(context, listen: false).RutaUsuarioFecha(FechaSeleccionada,context);      
     });
@@ -99,51 +108,67 @@ class _HystoryState extends State<Hystory> {
         itemBuilder: (context, index) {
           final datos = listaDatos[index];
           return Card(
-            //color: const Color.fromARGB(183, 227, 248, 227), // Color de fonde del card
+            //color: Colors.blue[300], // Color de fonde del card
             elevation: 5,
             child: Column(
               children: [
-                Row(
-                  children: [
-                    const SizedBox(width: 15),
-                    SizedBox(
-                      width: size.width*0.5,
-                      child: Column(                      
-                        crossAxisAlignment: CrossAxisAlignment.start, // alinear hacia la izquierda
-                        children: [
-                          const SizedBox(height: 10),
-                          Texto1(datos['nombre_cliente']),
-                          //const SizedBox(height: 10),
-                          Texto2('ID: ${datos['numero_seguro']}'),          
-                        ]
-                      ),
-                    ),                                     
-                    SizedBox(
-                      width: size.width*0.35,                      
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end, // alinear hacia la derecha
-                        children: [
-                          const SizedBox(height: 10),
-                          Texto1('passengers: ${datos['pasajero']}'),
-                          //const SizedBox(height: 10),
-                          Texto2(datos['telefono']),
-                        ],
-                      ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.blue[800],
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
                     ),
-                  ],
-                ),
-                Row(
-                  children: [
-                  const SizedBox(width: 15),
-                  Texto2('State: ${datos['estado_ruta']}'),
-                  ],
+                  ),
+                  child: Row(
+                    children: [
+                      SizedBox(width: 15),
+                      SizedBox(
+                        width: size.width*0.5,
+                        child: Column(                      
+                          crossAxisAlignment: CrossAxisAlignment.start, // alinear hacia la izquierda
+                          children: [
+                            SizedBox(height: 10),
+                            Texto1(datos['nombre_cliente']),
+                            //const SizedBox(height: 10),
+                            Texto2('ID: ${datos['numero_seguro']}'),          
+                          ]
+                        ),
+                      ),                                     
+                      SizedBox(
+                        width: size.width*0.35,                      
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end, // alinear hacia la derecha
+                          children: [
+                            const SizedBox(height: 10),
+                            Texto1('passengers: ${datos['pasajero']}'),
+                            //const SizedBox(height: 10),
+                            Texto2(datos['telefono']),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 Container(
-                  width: double.infinity,   // Se ajusta al ancho del contenedor padre
-                  height: 2,              // Grosor de la línea
-                  color: const Color.fromARGB(14, 0, 0, 0),    // Color de la línea
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  height: 30,
+                  decoration: BoxDecoration(
+                    color: Colors.blue[800],                    
+                  ),
+                  child: Row(
+                    children: [
+                      SizedBox(width: 15),                      
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color:obtenerColorEstado(datos['estado_ruta']),
+                        ),                        
+                        child: Texto2('   ${datos['estado_ruta']}   '),
+                      ),
+                    ],
+                  ),
                 ),
+                SizedBox(height: 15),
                 Row(
                   children: [
                     const SizedBox(width: 15),
@@ -152,8 +177,8 @@ class _HystoryState extends State<Hystory> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [                              
-                          Texto1('Pickup'),
-                          Texto2('${datos['hora']}'),
+                          Texto11('Pickup'),
+                          Texto22('${datos['hora']}'),
                         ]                            
                       ),
                     ),  
@@ -162,7 +187,7 @@ class _HystoryState extends State<Hystory> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end, // alinear hacia la derecha
                         children: [
-                          Texto2('${datos['origen']}'),
+                          Texto22('${datos['origen']}'),
                         ]                            
                       ),
                     ), 
@@ -178,7 +203,7 @@ class _HystoryState extends State<Hystory> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [                              
-                          Texto1('Dropoff'),
+                          Texto11('Dropoff'),
                         ]                            
                       ),
                     ),  
@@ -187,7 +212,7 @@ class _HystoryState extends State<Hystory> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end, // alinear hacia la derecha
                         children: [
-                          Texto2('${datos['destino']}'),
+                          Texto22('${datos['destino']}'),
                         ]                            
                       ),
                     ), 
@@ -196,7 +221,7 @@ class _HystoryState extends State<Hystory> {
                 Container(
                   width: double.infinity,   // Se ajusta al ancho del contenedor padre
                   height: 2,              // Grosor de la línea
-                  color: const Color.fromARGB(14, 0, 0, 0),    // Color de la línea
+                  color: Color.fromARGB(14, 0, 0, 0),    // Color de la línea
                   margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 ),
                 if(datos['estado_ruta']=='cancelado')...[
@@ -254,8 +279,7 @@ class _HystoryState extends State<Hystory> {
                       ),
                     ],
                   ),
-                ],
-                
+                ],                
               ],
             ),
           );
@@ -265,11 +289,20 @@ class _HystoryState extends State<Hystory> {
   }
 
   // ignore: non_constant_identifier_names
-  Text Texto1(String texto) => Text(texto, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,),);
+  Text Texto1(String texto) => Text(texto, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,));
+
   // ignore: non_constant_identifier_names
-  Text Texto2(String texto) => Text(texto, style: TextStyle(color: Colors.black),);
+  Text Texto2(String texto) => Text(texto, style: TextStyle(color: Colors.white));
+
   // ignore: non_constant_identifier_names
-  Text Texto3(String texto) => Text(texto, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),);
+  Text Texto11(String texto) => Text(texto, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,));
+
+  // ignore: non_constant_identifier_names
+  Text Texto22(String texto) => Text(texto, style: TextStyle(color: Colors.black));
+
+  // ignore: non_constant_identifier_names
+  Text Texto3(String texto) => Text(texto, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15));
+
   // ignore: non_constant_identifier_names
   Text Texto4(String texto) => Text(texto, style: TextStyle(color: Colors.deepOrangeAccent[700], fontWeight: FontWeight.bold, fontSize: 15,decoration: TextDecoration.lineThrough));
 
@@ -278,14 +311,14 @@ class _HystoryState extends State<Hystory> {
     return TextField(
       controller: _dateController,
       decoration: InputDecoration(
-        labelText: DateTime.now().toString().split(" ")[0],
+        labelText: 'DATE',
         filled: true,
-        prefixIcon: Icon(Icons.calendar_today, color: Colors.blue,),
+        prefixIcon: Icon(Icons.calendar_today, color: Colors.blue[800]),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide.none
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue)
+          borderSide: BorderSide(color: const Color.fromARGB(255, 0, 103, 187))
         ),
       ),
       readOnly: true,
@@ -296,16 +329,17 @@ class _HystoryState extends State<Hystory> {
   }
 
   Future<void> _selectDate() async{
-    //DateTime initialDate = DateTime.tryParse(FechaSeleccionada) ?? DateTime.now();
-    DateTime? picked = await showDatePicker(
+    // ignore: no_leading_underscores_for_local_identifiers
+    DateTime? _picked = await showDatePicker(
       context: context, 
       //initialDate: DateTime.now(),
       initialDate: DateTime.tryParse(FechaSeleccionada),
       firstDate: DateTime(2025), 
       lastDate: DateTime(2030), 
     );
-    if(picked != null){
-      final nuevaFecha = picked.toString().split(" ")[0];
+    if(_picked != null){
+      print(FechaSeleccionada);
+      final nuevaFecha = _picked.toString().split(" ")[0];
       setState(() {
         _dateController.text = nuevaFecha;
         FechaSeleccionada = nuevaFecha;
@@ -314,7 +348,20 @@ class _HystoryState extends State<Hystory> {
       Provider.of<UsuarioProvider>(context, listen: false)
       // ignore: use_build_context_synchronously
       .RutaUsuarioFecha(FechaSeleccionada, context);
-    }
+    }else{print(FechaSeleccionada);}
   }
   
+  Color? obtenerColorEstado(String? estado) {
+    switch (estado) {
+      case 'completo':
+        return Colors.green[700];
+      case 'cancelado':
+        return Colors.red[700];
+      case null:
+        return Colors.grey[200];
+      default:
+        return Colors.transparent;
+    }
+  }
+
 }

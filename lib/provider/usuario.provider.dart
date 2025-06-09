@@ -121,9 +121,11 @@ class UsuarioProvider with ChangeNotifier {
     }
   }
     // Funcion para traer todas las rutas por fecha de un usuario a consultar
-  Future<void> RutaUsuarioFecha(String fecha, BuildContext context) async {    
+  // ignore: non_constant_identifier_names
+  Future<void> RutaUsuarioFecha(fecha, BuildContext context) async {    
+    //DateTime now = new DateTime.now();
     String soloFecha = fecha;
-    print(soloFecha);
+    //print(soloFecha);
     final url = Uri.parse('$url_api/api/ruta-por-fecha/?fecha=$soloFecha');
     final response = await http.get(
       url,
@@ -133,8 +135,8 @@ class UsuarioProvider with ChangeNotifier {
       },
     );
     if (response.statusCode == 200) {
+      print(soloFecha);
       final data = response.body;
-
       _rutaActiva = data.toString(); // Almacena la respuesta en la variable.
       notifyListeners(); // Notifica a los listeners para que se actualice la UI.
     } else {

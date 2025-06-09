@@ -157,7 +157,8 @@ class _LoginState extends State<Login> {
     return SafeArea(
       child: Container(
         decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(100)),
-        margin: EdgeInsets.symmetric(horizontal: size.height * 0.145,vertical: size.width*0.2),
+        //margin: EdgeInsets.symmetric(horizontal: size.height * 0.145,vertical: size.width*0.2),
+        margin: EdgeInsets.symmetric(horizontal: 142,vertical: 75),
         child: Image.asset('assets/images/logo.png', width: 200, height: 150),
         //const Icon(Icons.person_pin, color: Colors.white,size: 100,),
       )

@@ -1,4 +1,4 @@
-import 'package:app_movil/pages/taps/four.page.dart';
+import 'package:app_movil/pages/taps/Avai_Trip.page.dart';
 import 'package:app_movil/pages/taps/history.tap.dart';
 import 'package:app_movil/pages/taps/earnings.tap.dart';
 import 'package:app_movil/pages/taps/my_route.tap.dart';
@@ -50,7 +50,7 @@ class Home_Page extends StatelessWidget {
         Column(
           children: [
             Container(
-              color: Colors.green[500],
+              color: Colors.green[700],
               padding: EdgeInsets.only(top:MediaQuery.of(context).padding.top),//
               child: Center(
                 child: Column(
@@ -109,7 +109,7 @@ class Home_Page extends StatelessWidget {
           MyRoute(),          
           Hystory(),          
           earnings(),
-          Four_Tap(),
+          Avai_Trip(),
         ],
       );
   }  

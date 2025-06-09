@@ -62,7 +62,7 @@ class _earningsState extends State<earnings> {
   // ignore: non_constant_identifier_names
   Container BarraNavegacion(size) {
     return Container(
-      height: 30,
+      height: 40,
       width: size*1.0,
       decoration: BoxDecoration(
         color: Colors.green[900],
