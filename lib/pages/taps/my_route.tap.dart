@@ -4,7 +4,7 @@ import 'package:app_movil/constantes.dart';
 import 'package:app_movil/provider/usuario.provider.dart';
 import 'package:app_movil/widgets/Ubicacion.dart';
 import 'package:app_movil/widgets/UbicacionContinua.dart';
-import 'package:geocoding/geocoding.dart';
+
 import 'package:http/http.dart' as http;
 // ignore: depend_on_referenced_packages
 import 'package:url_launcher/url_launcher.dart';
@@ -30,6 +30,7 @@ class _MyRouteState extends State<MyRoute> {
   Timer? temporizador;
   double? distanciaAlPasajero;
 
+  // ignore: unused_field
   StreamSubscription<Position>? _posicionSub;
   Position? _posicionActual;
 

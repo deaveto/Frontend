@@ -1,7 +1,6 @@
 
 import 'package:app_movil/provider/datos.personales.provider.dart';
 import 'package:app_movil/provider/login.provider.dart';
-import 'package:app_movil/provider/usuario.provider.dart';
 import 'package:flutter/material.dart';
 import 'package:app_movil/widgets/Campo_Contraseña.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:app_movil/provider/rutas_disponibles.provider.dart';
-import 'package:app_movil/provider/usuario.provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 // ignore: depend_on_referenced_packages
