@@ -44,7 +44,7 @@ class RutasDisponiblesProvider with ChangeNotifier {
     DateTime now = new DateTime.now();
     String Fecha = now.toIso8601String().split('T').first;
     final accessToken = Provider.of<AuthProvider>(context, listen: false).accessToken;
-    if(accessToken == null || JwtDecoder.isExpired(accessToken!)){
+    if(accessToken == null || JwtDecoder.isExpired(accessToken)){
       _rutasSinAsignar = 'Token vencido. Redirigiendo al login...';
       notifyListeners();
       Navigator.pushReplacementNamed(context, 'login');
