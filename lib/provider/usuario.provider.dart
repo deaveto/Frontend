@@ -1,12 +1,15 @@
 import 'package:app_movil/constantes.dart';
+import 'package:app_movil/provider/login.provider.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:provider/provider.dart';
 
 
 String? accessToken;
+String? refreshToken;
 
 class Usuario_Login {
   final TextEditingController usuarioController;
@@ -20,7 +23,7 @@ class Usuario_Login {
   );
   Future<void> loginUsuario(BuildContext context) async {
     final url = Uri.parse('$url_api/api/token/');
-    //final url = Uri.parse('http://10.0.2.2:8000/api/token/');
+
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -32,8 +35,11 @@ class Usuario_Login {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       accessToken = data['access'];
+      refreshToken = data['refresh'];
+
+      Provider.of<AuthProvider>(context, listen: false).setAccessToken(accessToken!, refreshToken);
       // Aquí puedes guardar el token si deseas
-      print('Token: $accessToken');
+
       // Navegar a la página de inicio
       Navigator.pushReplacementNamed(context, 'home');
     } else {
@@ -50,6 +56,7 @@ class Usuario_Login {
   }
 }
 
+
 class UsuarioProvider with ChangeNotifier {
   String _rutaActiva = ""; // Variable para almacenar la respuesta de la API.
   String get rutaActiva => _rutaActiva;
@@ -60,12 +67,13 @@ class UsuarioProvider with ChangeNotifier {
     final expirationDate = DateTime.fromMillisecondsSinceEpoch(decodedToken['exp'] * 1000);
     return expirationDate.isBefore(DateTime.now());
   }
-  
+ 
   // Funcion para traer todas las rutas de la fecha actual de un usuario a consultar
+  // ignore: non_constant_identifier_names
   Future<void> RutaUsuarioActivas(BuildContext context) async {    
     DateTime now = new DateTime.now();
     String soloFecha = now.toIso8601String().split('T').first;
-    print(soloFecha);
+
     final url = Uri.parse('$url_api/api/ruta-activa-por-fecha/?fecha=$soloFecha');
     final response = await http.get(
       url,
@@ -87,6 +95,7 @@ class UsuarioProvider with ChangeNotifier {
     }
   }
 
+  // Funcion para traer las rutas de la semana 
   Future<void> obtenerSemanaActual(BuildContext context) async {
     DateTime hoy = DateTime.now();    
     // Ajustamos para que el lunes sea el primer día (en DateTime, lunes es 1, domingo es 7)
@@ -120,7 +129,7 @@ class UsuarioProvider with ChangeNotifier {
       Navigator.pushReplacementNamed(context, 'login');
     }
   }
-    // Funcion para traer todas las rutas por fecha de un usuario a consultar
+
   // ignore: non_constant_identifier_names
   Future<void> RutaUsuarioFecha(fecha, BuildContext context) async {    
     //DateTime now = new DateTime.now();
@@ -178,7 +187,7 @@ class UsuarioProvider with ChangeNotifier {
   }
 
   // Funcion para actualizar las notas de una ruta
-  Future<void> actualizarNotasRuta(int RutaId, String NuevasNotas, BuildContext context) async{
+  Future<void> actualizarNotasRuta(int RutaId, String NuevasNotas,BuildContext context) async{
     if(accessToken == null || JwtDecoder.isExpired(accessToken!)){
       _rutaActiva = 'Token vencido. Redirigiendo al login...';
       notifyListeners();
@@ -204,7 +213,7 @@ class UsuarioProvider with ChangeNotifier {
       print('Error al actualizar ruta: ${response.statusCode}');
       print('Detalle: ${response.body}');
     }
-  } 
+  }
 
 }
 

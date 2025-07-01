@@ -13,12 +13,14 @@ class Hystory extends StatefulWidget  {
 }
 
 // ignore: camel_case_types
-class _HystoryState extends State<Hystory> {
+class _HystoryState extends State<Hystory> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => false; // <-- Esto fuerza la destrucción
   // ignore: prefer_final_fields
   TextEditingController _dateController = TextEditingController();
   // ignore: non_constant_identifier_names
   String FechaSeleccionada = DateTime.now().toString().split(" ")[0];
-  //String? FechaSeleccionada;
+
   
   @override
   void initState() {
@@ -36,32 +38,36 @@ class _HystoryState extends State<Hystory> {
   
   @override 
   Widget build(BuildContext context) {
+    super.build(context);
     final data = Provider.of<UsuarioProvider>(context).rutaActiva;
-
+    if (data.isEmpty || data.trim() == "") {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     List<dynamic> listaDatos = [];
 
     try {
       listaDatos = json.decode(data);
       // Ordenar por hora
       listaDatos.sort((a, b) {
-      final formato = RegExp(r'(\d+):(\d+)\s(AM|PM)');
-      DateTime parseHora(String horaStr) {
-        final match = formato.firstMatch(horaStr);
-        if (match == null) return DateTime(0);
-        int hour = int.parse(match.group(1)!);
-        int minute = int.parse(match.group(2)!);
-        String period = match.group(3)!;
+        final formato = RegExp(r'(\d+):(\d+)\s(AM|PM)');
+        DateTime parseHora(String horaStr) {
+          final match = formato.firstMatch(horaStr);
+          if (match == null) return DateTime(0);
+          int hour = int.parse(match.group(1)!);
+          int minute = int.parse(match.group(2)!);
+          String period = match.group(3)!;
 
-        if (period == 'PM' && hour != 12) hour += 12;
-        if (period == 'AM' && hour == 12) hour = 0;
+          if (period == 'PM' && hour != 12) hour += 12;
+          if (period == 'AM' && hour == 12) hour = 0;
 
-        return DateTime(0, 1, 1, hour, minute);
-      }
-      final horaA = parseHora(a['hora']);
-      final horaB = parseHora(b['hora']);
-      return horaA.compareTo(horaB);
-
-    });
+          return DateTime(0, 1, 1, hour, minute);
+        }
+        final horaA = parseHora(a['hora']);
+        final horaB = parseHora(b['hora']);
+        return horaA.compareTo(horaB);
+      });
     } catch (e) {
       return Scaffold(
         body: Container(

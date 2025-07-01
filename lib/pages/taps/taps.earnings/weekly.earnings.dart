@@ -121,7 +121,7 @@ class _weeklyState extends State<weekly> {
           SumaDiasSemana[6] += double.tryParse(item["total_final"].toString()) ?? 0.0;
         }
       }      
-      sumaSemanaT = SumaDiasSemana[0] + SumaDiasSemana[1] + SumaDiasSemana[2] + SumaDiasSemana[3] + SumaDiasSemana[4] + SumaDiasSemana[6] + SumaDiasSemana[6]; 
+      sumaSemanaT = SumaDiasSemana[0] + SumaDiasSemana[1] + SumaDiasSemana[2] + SumaDiasSemana[3] + SumaDiasSemana[4] + SumaDiasSemana[5] + SumaDiasSemana[6]; 
 
       setState(() {       
         sumaLunes = SumaDiasSemana[0];
@@ -145,9 +145,15 @@ class _weeklyState extends State<weekly> {
   @override
   Widget build(BuildContext context) {
     final size =MediaQuery.of(context).size;
+    final data = Provider.of<UsuarioProvider>(context, listen: false).rutaActiva;
+    if (data.isEmpty || data.trim() == "") {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     try{
-      print('Lunes: $sumaLunes');
+      
       List<ChartColumData> chartData = <ChartColumData> [
         ChartColumData('Mon', sumaLunes),
         ChartColumData('Tue', sumaMartes),

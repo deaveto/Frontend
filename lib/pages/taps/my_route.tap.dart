@@ -1,6 +1,11 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:app_movil/constantes.dart';
 import 'package:app_movil/provider/usuario.provider.dart';
+import 'package:app_movil/widgets/Ubicacion.dart';
+import 'package:app_movil/widgets/UbicacionContinua.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:http/http.dart' as http;
 // ignore: depend_on_referenced_packages
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
@@ -17,11 +22,16 @@ class MyRoute extends StatefulWidget {
 
 // ignore: camel_case_types
 class _MyRouteState extends State<MyRoute> {
+  final token = accessToken;
   int conteo = 1;
   String estadoT = 'inicio'; // inicio, espera, final
   bool botonEsperaDeshabilitado = false;
   Duration tiempoRestante = Duration(minutes: 5);
   Timer? temporizador;
+  double? distanciaAlPasajero;
+
+  StreamSubscription<Position>? _posicionSub;
+  Position? _posicionActual;
 
   void activarEspera() {
     setState(() {
@@ -56,15 +66,36 @@ class _MyRouteState extends State<MyRoute> {
   @override
   void initState() {
     super.initState();
+    _iniciarSeguimientoUbicacion();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       Provider.of<UsuarioProvider>(context, listen: false).RutaUsuarioActivas(context);
     });
   }
+  
+  void _iniciarSeguimientoUbicacion() async {
+  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  LocationPermission permission = await Geolocator.checkPermission();
+  if (!serviceEnabled || permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+    // Solicitar permisos o mostrar error
+    await Geolocator.requestPermission();
+    return;
+  }
 
-
+  _posicionSub = obtenerUbicacionContinua().listen((Position position) {
+    setState(() {
+      _posicionActual = position;
+    });
+  });
+}
   @override
   Widget build(BuildContext context) {
+    
     final data = Provider.of<UsuarioProvider>(context).rutaActiva;
+    if (data.isEmpty || data.trim() == "") {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     int pasajeroIndex = 0; // Contador global de pasajeros
     try {
       List<dynamic> listaDatos = json.decode(data);
@@ -106,8 +137,7 @@ class _MyRouteState extends State<MyRoute> {
       }
 
       if (grupoActual.isNotEmpty) grupos.add(grupoActual);
-      print(grupos);
-
+      
       return Scaffold(
         backgroundColor: Colors.white,
         body: Center(     
@@ -125,18 +155,18 @@ class _MyRouteState extends State<MyRoute> {
                     for (var pasajero in grupo)...[
                       (){
                         pasajeroIndex++;
-                        //print('$pasajeroIndex');
+
                         return ExpansionOrigen(pasajeroIndex, pasajero, Icons.album);
                       }(),
                     ],
                     for (var pasajero in grupo)...[
                       (){
                         pasajeroIndex++;
-                        //print('$pasajeroIndex');
+
                         return ExpansionDestino(pasajeroIndex, pasajero, Icons.fmd_good_outlined);
                       }(),
                     ],
-                    //for (var pasajero in grupo) ExpansionDestino(ruta, pasajero, Icons.fmd_good_outlined),
+
                   ],
                 );
               },
@@ -152,9 +182,65 @@ class _MyRouteState extends State<MyRoute> {
     }
   }
 
+  Future<double?> obtenerDistanciaGoogleMatrix(pasajero) async {
+    final origenStr = '${_posicionActual ?.latitude},${_posicionActual ?.longitude}';
+    final destinoEncoded = Uri.encodeComponent(pasajero);
+    final url = Uri.parse(
+      'https://maps.googleapis.com/maps/api/distancematrix/json?'
+      'origins=$origenStr&destinations=$destinoEncoded&mode=driving&key=$DistanceMatrixapi',
+    );    
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final distanciaValor = data['rows'][0]['elements'][0]['distance']['value']; // en metros
+      if (distanciaValor != null) {
+        setState(() {
+          distanciaAlPasajero = distanciaValor.toDouble();
+          print('distancia: $distanciaAlPasajero');
+        });
+      }
+    } else {
+      print('Error: ${response.body}');
+      return null;
+    }
+    return null;
+  }
+
+  Future<double?> obtenerDistanciaGoogleMatrix1(pasajero) async {
+    final origenStr = '${_posicionActual ?.latitude},${_posicionActual ?.longitude}';
+    final destinoEncoded = Uri.encodeComponent(pasajero);
+    final url = Uri.parse(
+      'https://maps.googleapis.com/maps/api/distancematrix/json?'
+      'origins=$origenStr&destinations=$destinoEncoded&mode=driving&key=$DistanceMatrixapi',
+    );    
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final distanciaValor = data['rows'][0]['elements'][0]['distance']['value']; // en metros
+      if (distanciaValor != null) {
+        setState(() {
+          distanciaAlPasajero = distanciaValor.toDouble();
+          print('distancia: $distanciaAlPasajero');
+        });
+      }
+    } else {
+      print('Error: ${response.body}');
+      return null;
+    }
+    return null;
+  }
+
    // ignore: non_constant_identifier_names
   Widget ExpansionDestino(ruta, pasajero, IconData icono) {
     if((pasajero['estado_ruta'] == 'completo')&&(ruta == conteo))[conteo++];
+
+    Timer.periodic(Duration(seconds: 3), (timer) {
+      if (mounted && pasajero['estado_ruta'] == 'recogido') {
+        obtenerDistanciaGoogleMatrix1(pasajero['destino']);
+      } else {
+        timer.cancel();
+      }
+    });
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -173,10 +259,10 @@ class _MyRouteState extends State<MyRoute> {
         Expanded(
           child: ExpansionTile(
             backgroundColor: ruta == conteo 
-              ? Colors.blue[700]
+              ? Colors.blue[800]
               : Colors.white,
             collapsedBackgroundColor: ruta == conteo 
-              ? Colors.blue[200] 
+              ? Colors.blue[100] 
               : Colors.white,
             title: Text(pasajero['destino'],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15)),
             subtitle: Text('Trip ID: ${pasajero['numero_seguro']}\n${pasajero['nombre_cliente']}',style: TextStyle(fontSize: 12)),
@@ -210,11 +296,12 @@ class _MyRouteState extends State<MyRoute> {
             ),
             children: [
               SizedBox(height: 10),
-              if((pasajero['estado_ruta'] == 'recogido')&&(ruta==conteo))...[
+              if((pasajero['estado_ruta'] == 'recogido')&&(ruta==conteo)&&(distanciaAlPasajero != null && distanciaAlPasajero! <= 50))...[
                 MaterialButton(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8),side: BorderSide(color: Color.fromARGB(255, 255, 151, 32), width: 3)),
+                  minWidth: 100,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   color: Colors.white,
-                  child: Text('Finalizar', style: TextStyle(color: Color.fromARGB(255, 255, 151, 32),fontWeight: FontWeight.bold,fontSize: 16)),
+                  child: Text('Finalizar', style: TextStyle(color: Color.fromARGB(255, 219, 117, 0),fontWeight: FontWeight.bold,fontSize: 16)),
                   onPressed:(){
                     Provider.of<UsuarioProvider>(context, listen: false)
                     .actualizarEstadoRuta(pasajero['id'], 'completo', context);
@@ -257,10 +344,10 @@ class _MyRouteState extends State<MyRoute> {
         Expanded(
           child: ExpansionTile(
             backgroundColor: ruta == conteo 
-              ? Colors.blue[700]
+              ? Colors.blue[800]
               : Colors.white,
             collapsedBackgroundColor: ruta == conteo 
-              ? Colors.blue[200]
+              ? Colors.blue[100]
               : Colors.white,
             title: Text(pasajero['origen'],style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15,)),           
             subtitle: Text('ID: ${pasajero['numero_seguro']}\n${pasajero['nombre_cliente']}   --   Pickup Time: ${pasajero['hora']}',style: TextStyle(fontSize: 13)),
@@ -311,10 +398,19 @@ class _MyRouteState extends State<MyRoute> {
       ],
     );
   }
-
+  
   // ignore: non_constant_identifier_names
-  Column DatosRuta(conteo, ruta, pasajero) {
+  Column DatosRuta(conteo, ruta, pasajero) { 
     final size = MediaQuery.of(context).size;
+    //calcularDistancia(pasajero);
+    Timer.periodic(Duration(seconds: 3), (timer) {
+      if (mounted && pasajero['estado_ruta'] == 'en curso') {
+        obtenerDistanciaGoogleMatrix(pasajero['origen']);
+      } else {
+        timer.cancel();
+      }
+    });
+    
     return Column(    
       mainAxisSize: MainAxisSize.max,  
       children: [        
@@ -324,7 +420,9 @@ class _MyRouteState extends State<MyRoute> {
           children: [
             SizedBox(width: 10),
             Column(
-              children: [                
+              children: [  
+                if (pasajero['estado_ruta'] == 'en curso')
+                  Icon(Icons.architecture_rounded,color: Colors.white,),
                 if (botonEsperaDeshabilitado && pasajero['estado_ruta'] == 'espera')
                   Icon(Icons.access_time,color: Colors.white,),
                 SizedBox(height: 5),
@@ -349,6 +447,9 @@ class _MyRouteState extends State<MyRoute> {
                   Text(formatoTiempo(tiempoRestante),
                     style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 SizedBox(height: 15),
+                if (pasajero['estado_ruta'] == 'en curso')
+                  Text('${distanciaAlPasajero?.toStringAsFixed(2)} m',style: TextStyle(color: Colors.white)),
+                SizedBox(height: 15),
                 Text('Passenger: ${pasajero['pasajero']}', 
                   style: TextStyle(
                     color: ruta == conteo 
@@ -366,7 +467,7 @@ class _MyRouteState extends State<MyRoute> {
                 ),
               ],
             ),
-            //SizedBox(width: 100),
+
             SizedBox(
               width: size.width*0.58, //tamaño del sizebox para que el botn tenga espacio para linearce a la derecha
               child: Column(     
@@ -375,33 +476,38 @@ class _MyRouteState extends State<MyRoute> {
                   children: [
                   if ((pasajero['estado_ruta'] == 'asignada')&&(ruta == conteo))...[
                     MaterialButton(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8),side: BorderSide(color: Color.fromARGB(255, 255, 167, 67), width: 3)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       color: Colors.white,
-                      child: Text('Iniciar', style: TextStyle(color: Color.fromARGB(255, 241, 131, 6), fontWeight: FontWeight.bold,fontSize: 16)),
+                      child: Text('Iniciar', style: TextStyle(color: Color.fromARGB(255, 219, 117, 0), fontWeight: FontWeight.bold,fontSize: 16)),
                       onPressed:(){
                         Provider.of<UsuarioProvider>(context, listen: false)
                         .actualizarEstadoRuta(pasajero['id'], 'en curso', context);
+                        //_launchUrlMap(pasajero['origen']);
                         //Navigator.pushReplacementNamed(context, 'home');
                       } 
                     ),
-                  ],                  
-                  if (pasajero['estado_ruta'] == 'en curso') ...[     
+                  ],
+                  if (pasajero['estado_ruta'] == 'en curso') ...[   
                     MaterialButton(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8),side: BorderSide(color: Color.fromARGB(255, 59, 167, 255), width: 3)),
+                      minWidth: 100,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       color: botonEsperaDeshabilitado
                           ? Colors.orange.withOpacity(0.5)
                           : Colors.white,
-                      child: Text('Mapa', style: TextStyle(color: Color.fromARGB(255, 0, 120, 218) , fontWeight: FontWeight.bold,fontSize: 16)),
+                      child: Text('Mapa', style: TextStyle(color: Color.fromARGB(255, 0, 110, 201) , fontWeight: FontWeight.bold,fontSize: 16)),
                       onPressed: botonEsperaDeshabilitado
                         ? null
-                         : () {_launchUrlMap(pasajero['origen']);},
-                    ),               
+                        : () {_launchUrlMap(pasajero['origen']);},
+                    ),
+                  ],
+                  if ((pasajero['estado_ruta'] == 'en curso')&&(distanciaAlPasajero != null && distanciaAlPasajero! <= 50)) ...[                  
                     MaterialButton(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8),side: BorderSide(color: Color.fromARGB(255, 255, 167, 67), width: 3)),
+                      minWidth: 100,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       color: botonEsperaDeshabilitado
                           ? Colors.orange.withOpacity(0.5)
                           : Colors.white,
-                      child: Text('Esperar', style: TextStyle(color: Color.fromARGB(255, 241, 131, 6),fontWeight: FontWeight.bold,fontSize: 16)),
+                      child: Text('Esperar', style: TextStyle(color: Color.fromARGB(255, 219, 117, 0),fontWeight: FontWeight.bold,fontSize: 16)),
                       onPressed: botonEsperaDeshabilitado
                         ? null
                          : () {
@@ -412,11 +518,12 @@ class _MyRouteState extends State<MyRoute> {
                     ),
                     SizedBox(width: 10),
                     MaterialButton(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8),side: BorderSide(color: Color.fromARGB(255, 177, 93, 255), width: 3)),
+                      minWidth: 100,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       color: botonEsperaDeshabilitado
                           ? Color.fromARGB(255, 146, 45, 240).withOpacity(0.5)
                           : Colors.white,
-                       child: Text('Recogido', style: TextStyle(color: Color.fromARGB(255, 132, 0, 255),fontWeight: FontWeight.bold,fontSize: 16)),
+                       child: Text('Recogido', style: TextStyle(color: Color.fromARGB(255, 0, 117, 16),fontWeight: FontWeight.bold,fontSize: 16)),
                       onPressed: botonEsperaDeshabilitado
                         ? null
                         : () {                        
@@ -427,9 +534,10 @@ class _MyRouteState extends State<MyRoute> {
                   ],      
                   if (pasajero['estado_ruta'] == 'espera') ...[ 
                     MaterialButton(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8),side: BorderSide(color: Color.fromARGB(255, 255, 167, 67), width: 3)),
+                      minWidth: 100,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       color: Colors.white,
-                      child: Text('Recogido', style: TextStyle(color: Color.fromARGB(255, 255, 167, 67), fontWeight: FontWeight.bold)),
+                      child: Text('Recogido', style: TextStyle(color: Color.fromARGB(255, 219, 117, 0), fontWeight: FontWeight.bold)),
                       onPressed: () {
                         // acción recogido
                         Provider.of<UsuarioProvider>(context, listen: false)
@@ -437,9 +545,10 @@ class _MyRouteState extends State<MyRoute> {
                       },
                     ),
                     MaterialButton(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8),side: BorderSide(color: Color.fromARGB(255, 255, 61, 61), width: 3)),
+                      minWidth: 100,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       color: Colors.white,
-                      child: Text('Cancelar', style: TextStyle(color: Color.fromARGB(255, 255, 0, 0), fontWeight: FontWeight.bold)),
+                      child: Text('Cancelar', style: TextStyle(color: Color.fromARGB(255, 185, 0, 0), fontWeight: FontWeight.bold)),
                       onPressed: () {
                         // acción cancelar
                         _mostrarDialogoNota(context, pasajero); 
@@ -465,6 +574,7 @@ class _MyRouteState extends State<MyRoute> {
 
   Future<void> _launchUrlMap(String destino) async {
     Position posicion = await obtenerUbicacionActual();
+    // ignore: non_constant_identifier_names
     String UbicacionActual = '${posicion.latitude},${posicion.longitude}';
 
     final url = Uri.parse(
@@ -476,27 +586,6 @@ class _MyRouteState extends State<MyRoute> {
     if (!await launchUrl(url, mode:LaunchMode.externalApplication)) {
     throw Exception('Could not launch $url');
     }
-  }
-
-  Future<Position> obtenerUbicacionActual() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      throw Exception('El servicio de ubicación está desactivado.');
-    }
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        throw Exception('Permiso de ubicación denegado');
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      throw Exception('Los permisos de ubicación están permanentemente denegados');
-    }
-
-    return await Geolocator.getCurrentPosition();
   }
 
   void llamarNumero(String numero) async {
@@ -517,7 +606,7 @@ class _MyRouteState extends State<MyRoute> {
   }
   
   void _mostrarDialogoNota(BuildContext context, pasajero) {
-  TextEditingController _notaController = TextEditingController();
+  TextEditingController notaController = TextEditingController();
 
   showDialog(
     context: context,
@@ -525,7 +614,7 @@ class _MyRouteState extends State<MyRoute> {
       return AlertDialog(
         title: Text('Agregar una nota'),
         content: TextField(
-          controller: _notaController,
+          controller: notaController,
           maxLines: 3,
           decoration: InputDecoration(
             hintText: 'Escribe tu nota aquí...',
@@ -541,8 +630,8 @@ class _MyRouteState extends State<MyRoute> {
           ),
           TextButton(
             onPressed: () {
-              String nota = _notaController.text;
-              print('Nota agregada: $nota'); // Aquí puedes hacer lo que quieras con la nota
+              String nota = notaController.text;
+
               Navigator.of(context).pop(); // Cierra el diálogo
               Provider.of<UsuarioProvider>(context, listen: false)
               .actualizarEstadoRuta(pasajero['id'], 'cancelado', context);

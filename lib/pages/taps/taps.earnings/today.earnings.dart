@@ -34,6 +34,7 @@ class _todayState extends State<today> {
 
   void procesarDatos() {
     final data = Provider.of<UsuarioProvider>(context, listen: false).rutaActiva;
+    
     try {
       List<dynamic> listaDatos = json.decode(data);
       double sumaValor = 0.0;
@@ -74,6 +75,12 @@ class _todayState extends State<today> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final data = Provider.of<UsuarioProvider>(context, listen: false).rutaActiva;
+    if (data.isEmpty || data.trim() == "") {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     try{
       return Scaffold(
         backgroundColor: const Color.fromARGB(34, 0, 0, 0),

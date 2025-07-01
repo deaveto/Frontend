@@ -20,8 +20,8 @@ class _CampoContrasenaState extends State<CampoContrasena> {
       autocorrect: false,
       obscureText: !_mostrarClave,
       decoration: Input_Decoration.inputDecoration(
-        hintext: '********',
-        labeltext: 'Contraseña',
+        hintext: ' ',
+        labeltext: 'Password',
         icono: const Icon(Icons.lock_outline),
         suffixIcon: IconButton(
           icon: Icon(
