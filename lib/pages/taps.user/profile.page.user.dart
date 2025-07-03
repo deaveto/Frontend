@@ -144,8 +144,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin{
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
-    }
-    
+    }    
   }
 
   // Widget auxiliar para no repetir

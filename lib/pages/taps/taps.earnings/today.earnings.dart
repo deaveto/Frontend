@@ -157,10 +157,10 @@ class _todayState extends State<today> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            SizedBox(width: size.width*0.07),
-                            Text('Payout', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                            SizedBox(width: size.width*0.06),
+                            Text('Payout', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                             SizedBox(width: size.width*0.58),
-                            Text('\$${totalPayout.toStringAsFixed(2)}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                            Text('\$${totalPayout.toStringAsFixed(2)}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),

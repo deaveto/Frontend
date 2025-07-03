@@ -265,8 +265,8 @@ class _MyRouteState extends State<MyRoute> {
             collapsedBackgroundColor: ruta == conteo 
               ? Colors.blue[100] 
               : Colors.white,
-            title: Text(pasajero['destino'],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15)),
-            subtitle: Text('Trip ID: ${pasajero['numero_seguro']}\n${pasajero['nombre_cliente']}',style: TextStyle(fontSize: 12)),
+            title: Text(pasajero['destino'],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18)),
+            subtitle: Text('Trip ID: ${pasajero['numero_seguro']}\n${pasajero['nombre_cliente']}',style: TextStyle(fontSize: 15)),
             textColor:ruta == conteo 
               ? Colors.white
               : Colors.black,
@@ -311,11 +311,11 @@ class _MyRouteState extends State<MyRoute> {
                 ),
               ],
               if(pasajero['estado_ruta'] == 'completo')...[
-                Icon(Icons.add_task, color: Colors.green, size: 30,),         
+                Text('Finalized', style: TextStyle(color: Colors.green[800],fontWeight: FontWeight.bold,fontSize: 16)),
+                  
+                //Icon(Icons.add_task, color: Colors.green, size: 30,),         
               ],
-              if(pasajero['estado_ruta'] == 'cancelado')...[
-                Icon(Icons.block_flipped, color: Colors.red, size: 50,)
-              ],
+
               SizedBox(height: 10),
             ],
           ),
@@ -350,8 +350,8 @@ class _MyRouteState extends State<MyRoute> {
             collapsedBackgroundColor: ruta == conteo 
               ? Colors.blue[100]
               : Colors.white,
-            title: Text(pasajero['origen'],style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15,)),           
-            subtitle: Text('ID: ${pasajero['numero_seguro']}\n${pasajero['nombre_cliente']}   --   Pickup Time: ${pasajero['hora']}',style: TextStyle(fontSize: 13)),
+            title: Text(pasajero['origen'],style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),           
+            subtitle: Text('ID: ${pasajero['numero_seguro']}\n${pasajero['nombre_cliente']}   --   Pickup Time: ${pasajero['hora']}',style: TextStyle(fontSize: 15)),
             textColor:ruta == conteo 
               ? Colors.white
               : Colors.black,
@@ -403,14 +403,13 @@ class _MyRouteState extends State<MyRoute> {
   // ignore: non_constant_identifier_names
   Column DatosRuta(conteo, ruta, pasajero) { 
     final size = MediaQuery.of(context).size;
-    //calcularDistancia(pasajero);
-    Timer.periodic(Duration(seconds: 3), (timer) {
+    /*Timer.periodic(Duration(seconds: 3), (timer) {
       if (mounted && pasajero['estado_ruta'] == 'en curso') {
         obtenerDistanciaGoogleMatrix(pasajero['origen']);
       } else {
         timer.cancel();
       }
-    });
+    });*/
     
     return Column(    
       mainAxisSize: MainAxisSize.max,  
@@ -419,48 +418,32 @@ class _MyRouteState extends State<MyRoute> {
         Row(     
           mainAxisSize: MainAxisSize.max,
           children: [
-            SizedBox(width: 10),
-            Column(
-              children: [  
-                if (pasajero['estado_ruta'] == 'en curso')
-                  Icon(Icons.architecture_rounded,color: Colors.white,),
-                if (botonEsperaDeshabilitado && pasajero['estado_ruta'] == 'espera')
-                  Icon(Icons.access_time,color: Colors.white,),
-                SizedBox(height: 5),
-                Icon(Icons.accessibility_new_sharp,
-                  color: ruta == conteo 
-                    ? Colors.white
-                    : Color.fromARGB(255, 0, 120, 218)
-                ),
-                SizedBox(height: 3),
-                Icon(Icons.api_sharp,
-                  color: ruta == conteo 
-                    ? Colors.white
-                    : Color.fromARGB(255, 0, 120, 218)
-                )
-              ],
-            ),
-            SizedBox(width: 10),
+            SizedBox(width: 20),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start, // alinear hacia la izquierda
               children: [
                 if (botonEsperaDeshabilitado && pasajero['estado_ruta'] == 'espera')
                   Text(formatoTiempo(tiempoRestante),
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                SizedBox(height: 15),
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,fontSize: 16)),
+                /*SizedBox(height: 15),
                 if (pasajero['estado_ruta'] == 'en curso')
-                  Text('${distanciaAlPasajero?.toStringAsFixed(2)} m',style: TextStyle(color: Colors.white)),
+                  Text('${distanciaAlPasajero?.toStringAsFixed(2)} m',style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,fontSize: 16)),
+                */
                 SizedBox(height: 15),
                 Text('Passenger: ${pasajero['pasajero']}', 
                   style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                     color: ruta == conteo 
                       ? Colors.white
                       : Colors.black,
                   )
                 ),               
                 SizedBox(height: 5),
-                Text('${pasajero['estado_ruta']}', 
+                Text('State: ${pasajero['estado_ruta']}', 
                   style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                     color: ruta == conteo 
                       ? Colors.white
                       : Colors.black,
@@ -470,7 +453,7 @@ class _MyRouteState extends State<MyRoute> {
             ),
 
             SizedBox(
-              width: size.width*0.58, //tamaño del sizebox para que el botn tenga espacio para linearce a la derecha
+              width: size.width*0.54, //tamaño del sizebox para que el botn tenga espacio para linearce a la derecha
               child: Column(     
                 crossAxisAlignment: CrossAxisAlignment.end, // alinear hacia la derecha
                 mainAxisSize: MainAxisSize.max,                 
@@ -483,8 +466,8 @@ class _MyRouteState extends State<MyRoute> {
                       onPressed:(){
                         Provider.of<UsuarioProvider>(context, listen: false)
                         .actualizarEstadoRuta(pasajero['id'], 'en curso', context);
-                        //_launchUrlMap(pasajero['origen']);
-                        //Navigator.pushReplacementNamed(context, 'home');
+                        _launchUrlMap(pasajero['origen']);
+                        Navigator.pushReplacementNamed(context, 'home');
                       } 
                     ),
                   ],
@@ -500,8 +483,7 @@ class _MyRouteState extends State<MyRoute> {
                         ? null
                         : () {_launchUrlMap(pasajero['origen']);},
                     ),
-                  ],
-                  if ((pasajero['estado_ruta'] == 'en curso')&&(distanciaAlPasajero != null && distanciaAlPasajero! <= 50)) ...[                  
+
                     MaterialButton(
                       minWidth: 100,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -532,13 +514,45 @@ class _MyRouteState extends State<MyRoute> {
                           .actualizarEstadoRuta(pasajero['id'], 'recogido', context);
                           },
                     ),                
-                  ],      
+                  ],
+                  /*if ((pasajero['estado_ruta'] == 'en curso')&&(distanciaAlPasajero != null && distanciaAlPasajero! <= 50)) ...[                  
+                    MaterialButton(
+                      minWidth: 100,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      color: botonEsperaDeshabilitado
+                          ? Colors.orange.withOpacity(0.5)
+                          : Colors.white,
+                      child: Text('Esperar', style: TextStyle(color: Color.fromARGB(255, 219, 117, 0),fontWeight: FontWeight.bold,fontSize: 16)),
+                      onPressed: botonEsperaDeshabilitado
+                        ? null
+                         : () {
+                            Provider.of<UsuarioProvider>(context, listen: false)
+                            .actualizarEstadoRuta(pasajero['id'], 'espera', context);
+                            activarEspera();
+                          },
+                    ),
+                    SizedBox(width: 10),
+                    MaterialButton(
+                      minWidth: 100,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      color: botonEsperaDeshabilitado
+                          ? Color.fromARGB(255, 146, 45, 240).withOpacity(0.5)
+                          : Colors.white,
+                       child: Text('Recogido', style: TextStyle(color: Color.fromARGB(255, 0, 117, 16),fontWeight: FontWeight.bold,fontSize: 16)),
+                      onPressed: botonEsperaDeshabilitado
+                        ? null
+                        : () {                        
+                          Provider.of<UsuarioProvider>(context, listen: false)
+                          .actualizarEstadoRuta(pasajero['id'], 'recogido', context);
+                          },
+                    ),                
+                  ],  */    
                   if (pasajero['estado_ruta'] == 'espera') ...[ 
                     MaterialButton(
                       minWidth: 100,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       color: Colors.white,
-                      child: Text('Recogido', style: TextStyle(color: Color.fromARGB(255, 219, 117, 0), fontWeight: FontWeight.bold)),
+                      child: Text('Recogido', style: TextStyle(color: Color.fromARGB(255, 219, 117, 0), fontWeight: FontWeight.bold,fontSize: 16)),
                       onPressed: () {
                         // acción recogido
                         Provider.of<UsuarioProvider>(context, listen: false)
@@ -549,7 +563,7 @@ class _MyRouteState extends State<MyRoute> {
                       minWidth: 100,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       color: Colors.white,
-                      child: Text('Cancelar', style: TextStyle(color: Color.fromARGB(255, 185, 0, 0), fontWeight: FontWeight.bold)),
+                      child: Text('Cancelar', style: TextStyle(color: Color.fromARGB(255, 185, 0, 0), fontWeight: FontWeight.bold,fontSize: 16)),
                       onPressed: () {
                         // acción cancelar
                         _mostrarDialogoNota(context, pasajero); 
@@ -613,6 +627,7 @@ class _MyRouteState extends State<MyRoute> {
     context: context,
     builder: (context) {
       return AlertDialog(
+        backgroundColor: Colors.white,
         title: Text('Agregar una nota'),
         content: TextField(
           controller: notaController,

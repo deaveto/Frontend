@@ -147,7 +147,7 @@ class _HystoryState extends State<Hystory> with AutomaticKeepAliveClientMixin {
                           crossAxisAlignment: CrossAxisAlignment.end, // alinear hacia la derecha
                           children: [
                             const SizedBox(height: 10),
-                            Texto1('passengers: ${datos['pasajero']}'),
+                            Texto1('Passengers: ${datos['pasajero']}'),
                             //const SizedBox(height: 10),
                             Texto2(datos['telefono']),
                           ],
@@ -295,19 +295,19 @@ class _HystoryState extends State<Hystory> with AutomaticKeepAliveClientMixin {
   }
 
   // ignore: non_constant_identifier_names
-  Text Texto1(String texto) => Text(texto, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,));
+  Text Texto1(String texto) => Text(texto, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18));
 
   // ignore: non_constant_identifier_names
-  Text Texto2(String texto) => Text(texto, style: TextStyle(color: Colors.white));
+  Text Texto2(String texto) => Text(texto, style: TextStyle(color: Colors.white, fontSize: 16));
 
   // ignore: non_constant_identifier_names
-  Text Texto11(String texto) => Text(texto, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,));
+  Text Texto11(String texto) => Text(texto, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16));
 
   // ignore: non_constant_identifier_names
-  Text Texto22(String texto) => Text(texto, style: TextStyle(color: Colors.black));
+  Text Texto22(String texto) => Text(texto, style: TextStyle(color: Colors.black, fontSize: 16));
 
   // ignore: non_constant_identifier_names
-  Text Texto3(String texto) => Text(texto, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15));
+  Text Texto3(String texto) => Text(texto, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16));
 
   // ignore: non_constant_identifier_names
   Text Texto4(String texto) => Text(texto, style: TextStyle(color: Colors.deepOrangeAccent[700], fontWeight: FontWeight.bold, fontSize: 15,decoration: TextDecoration.lineThrough));
@@ -366,7 +366,7 @@ class _HystoryState extends State<Hystory> with AutomaticKeepAliveClientMixin {
       case null:
         return Colors.grey[200];
       default:
-        return Colors.transparent;
+        return Colors.orange;
     }
   }
 

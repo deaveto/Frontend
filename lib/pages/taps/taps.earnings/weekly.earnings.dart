@@ -89,11 +89,14 @@ class _weeklyState extends State<weekly> {
       double sumaSemanaT = 0.0;
 
       for(var item in listaDatos){
-        SumaDescuentos[0] += double.tryParse(item["valor_pago"].toString()) ?? 0.0;
-        SumaDescuentos[1] += double.tryParse(item["commission"].toString()) ?? 0.0;
-        SumaDescuentos[2] += double.tryParse(item["copay"].toString()) ?? 0.0;
-        SumaDescuentos[3] += double.tryParse(item["tech_fee"].toString()) ?? 0.0;
-        SumaDescuentos[4] += double.tryParse(item["tolls"].toString()) ?? 0.0;
+        if((item['estado_ruta'] == "completo")){
+          SumaDescuentos[0] += double.tryParse(item["valor_pago"].toString()) ?? 0.0;
+          SumaDescuentos[1] += double.tryParse(item["commission"].toString()) ?? 0.0;
+          SumaDescuentos[2] += double.tryParse(item["copay"].toString()) ?? 0.0;
+          SumaDescuentos[3] += double.tryParse(item["tech_fee"].toString()) ?? 0.0;
+          SumaDescuentos[4] += double.tryParse(item["tolls"].toString()) ?? 0.0;
+        }
+        
 
         if((item['estado_ruta'] == "completo")&&(item['fecha_inicio'] == FechaLunes)){
           SumaDiasSemana[0] += double.tryParse(item["total_final"].toString()) ?? 0.0;
@@ -245,10 +248,10 @@ class _weeklyState extends State<weekly> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                SizedBox(width: size.width*0.06),
-                                Text('Payout weekday', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                SizedBox(width: size.width*0.05),
+                                Text('Payout weekday', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                                 SizedBox(width: size.width*0.37),
-                                Text('\$${sumaSemana.toStringAsFixed(2)}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                Text('\$${sumaSemana.toStringAsFixed(2)}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                               ],
                             ),
                           ), 
