@@ -102,7 +102,7 @@ class _Home_PageState extends State<Home_Page> {
                     CircleAvatar(radius: 80, backgroundImage: NetworkImage('https://cdn.pixabay.com/photo/2022/11/11/19/44/siberian-husky-7585704_1280.jpg')),
                     SizedBox(height: 5),
                     Text(decoded["first_name"],style: TextStyle(fontSize: 25, color: Colors.white)),
-                    Text(decoded["email"],style: TextStyle(fontSize: 15, color: Colors.white)),
+                    Text(decoded["email"],style: TextStyle(fontSize: 15 , color: Colors.white)),
                     SizedBox(height: 20)
                   ],
                 ),
